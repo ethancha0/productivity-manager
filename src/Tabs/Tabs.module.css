@@ -1,0 +1,17 @@
+.tab{
+    display: inline-block;
+}
+
+.category{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+   
+}
+
+.settings img{
+    max-height: 25px;
+    display: block;
+    
+
+}
