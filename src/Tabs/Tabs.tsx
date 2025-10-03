@@ -8,8 +8,6 @@ function Tabs()
     const [currInput, setCurrInput] = useState(""); // curr input text
     const [tabs, setTabs] = useState([]); //create a dict of tabs
     const [options, setOptions] = useState([]); // create dict of 'settings' 
-    const [activeTab, setActiveTab] = useState(null); //which tab is open
-
 
     function handleButtonAdder(e){
         e.preventDefault(); //prevent page refresh
@@ -29,9 +27,7 @@ function Tabs()
     }
 
 
-    function togglePopup(tabName){
-        setActiveTab((prev) => (prev === tabName ? null : tabName));
-    }
+    
     
     return(
         <div className="tab">
@@ -63,29 +59,19 @@ function Tabs()
                     </button>
                     
 
-                    <a href = "#" 
-                    className={styles.settings}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        togglePopup(t)}}>
+                    <a href = "#" className={styles.settings}>
                         <img src={gearIcon} alt="settings"></img>
                     </a>
-
-                    {activeTab === t && <Popup tabName={t}/>}
                     </div>
                 ))}
             </div>
             
-            {/*
             <div>
                 <h3>Popup</h3>
                 {tabs.map((tab, index) => (
                 <Popup key={index} tabName={tab}/>
                 ))}
             </div>
-            */}
-
-            
             
             
             

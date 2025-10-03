@@ -2,13 +2,16 @@ import React, {useState} from 'react';
 import Countdown from "react-countdown";
 import styles from './Timer.module.css'
 
+
 export default function Pomodoro() {
 
   const [inputTime, setInputTime] = useState(25);
   const [endTime, setEndTime] = useState(null); // exact timestamp coundown will finish
-  
+
+  const [getFeedback, setGetFeedback] = useState(false);  
   const [intervalFeedback, setIntervalFeedback] = useState(""); 
   const [burnout, setBurnout] = useState(5);
+  
 
   function handleSubmit(e){
     e.preventDefault(); // prevent page refresh 
@@ -24,6 +27,7 @@ export default function Pomodoro() {
     e.preventDefault()
     console.log(intervalFeedback)
     console.log(burnout)
+    setGetFeedback(false)
 
   }
 
@@ -41,58 +45,65 @@ export default function Pomodoro() {
 
         <button
             type="submit"
-            >Submit
+            >Start Timer
         </button>
       </form>
       
-      <form onSubmit ={sendUserFeedback} className={styles.feedback}>
-        <input
-          type="text"
-          value={intervalFeedback}
-          onChange = {(e) => setIntervalFeedback(e.target.value)}
-        ></input>
-        
-        <input
-        type="range"
-        min={1}
-        max={10}
-        step={1}
-        value={burnout ?? 5}
-        onChange={(e) => setBurnout(Number(e.target.value))}
-        aria-level = "Burnout level 1-10"
 
-        >
-        </input>
+      {getFeedback && (
 
-        <button
-          type="submit"
-        >End Interval</button>
+          <form onSubmit ={sendUserFeedback} className={styles.feedback}>
+          <textarea 
+            
+            type="text-area"
+            value={intervalFeedback}
+            placeholder="Enter Session Summary"
+            onChange = {(e) => setIntervalFeedback(e.target.value)}
+          ></textarea>
+          
+          <input
+          type="range"
+          min={1}
+          max={10}
+          step={1}
+          value={burnout ?? 5}
+          onChange={(e) => setBurnout(Number(e.target.value))}
+          aria-label = "Burnout level 1-10"
 
-      </form>
-        
+          >
+          </input>
 
+          <button
+            type="submit"
+          >End Interval</button>
 
-      {endTime && ( // only show countdown if endTime exists 
-        <Countdown
-          date={endTime}
-          onComplete={() => {
-            fetch("http://127.0.0.1:5000/api/log-study", { //send post request when completed 
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ duration: inputTime })
-            });
-          }}
-          renderer={({ minutes, seconds, completed }) =>
-            completed ? (
-              <span>Done!</span>
-            ) : (
-              <span>
-                {minutes}:{seconds.toString().padStart(2, "0")}
-              </span>
-            )
-          }
-        />
+        </form>
       )}
+      
+
+      {endTime && (
+    <Countdown
+      date={endTime}
+      onComplete={async () => {
+        try {
+          await fetch("http://127.0.0.1:5000/api/log-study", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ duration: inputTime }),
+          });
+        } catch (e) {
+          console.error("log-study failed", e);
+        } finally {
+          setGetFeedback(true);
+        }
+      }}
+      renderer={({ minutes, seconds, completed }) =>
+        completed ? <span>Done!</span> :
+        <span>{String(minutes).padStart(2,"0")}:{String(seconds).padStart(2,"0")}</span>
+      }
+    />
+)}
+
     </div>
   );
 }
