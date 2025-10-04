@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import Countdown from "react-countdown";
 import styles from './Timer.module.css'
+import oven from '../assets/oven.gif'
+import stopwatch from '../Stopwatch/Stopwatch'
 
 
 export default function Pomodoro() {
@@ -11,6 +13,7 @@ export default function Pomodoro() {
   const [getFeedback, setGetFeedback] = useState(false);  
   const [intervalFeedback, setIntervalFeedback] = useState(""); 
   const [burnout, setBurnout] = useState(5);
+  const [inSession, setInSession] = useState(false);
   
 
   function handleSubmit(e){
@@ -19,6 +22,7 @@ export default function Pomodoro() {
     if(!isNaN(minutes) && minutes > 0){
       setEndTime(Date.now() + minutes * 60 * 1000); // calc end time in ms
     }
+    setInSession(true);
   }
 
   //FUNCTION: 
@@ -34,18 +38,31 @@ export default function Pomodoro() {
 
   return ( 
     <div>
-      <form onSubmit ={handleSubmit} className={styles.userInput}>
+      
 
-        <input 
+      <form onSubmit ={handleSubmit} className="flex flex-col-reverse items-center gap-2">
+
+        {/* input time */}
+        {!inSession && (
+        <input
+          className="bg-transparent font-mono text-5xl size-20 text-orange-500" 
           type="number"
+          step={5}
           value = {inputTime}
           onChange={(e) => setInputTime(e.target.value)}
-        ></input>
-
-
+        ></input> )
+        }
+        {/*The oven is the button */}
         <button
-            type="submit"
-            >Start Timer
+            className="font-mono font-bold text-orange-500"
+            type="submit">
+  
+            <img 
+              className ="h-48 w-auto"
+              src = {oven}>
+            </img>
+
+            {!inSession ? <p>Begin Baking</p> : <p>Cooking!!</p>}
         </button>
       </form>
       
@@ -54,10 +71,10 @@ export default function Pomodoro() {
 
           <form onSubmit ={sendUserFeedback} className={styles.feedback}>
           <textarea 
-            
+            className = "font-mono rounded-xl size-30 h-20 "
             type="text-area"
             value={intervalFeedback}
-            placeholder="Enter Session Summary"
+            placeholder="What did you accomplish?"
             onChange = {(e) => setIntervalFeedback(e.target.value)}
           ></textarea>
           
@@ -82,6 +99,7 @@ export default function Pomodoro() {
       
 
       {endTime && (
+    <div className = "mt-2 flex justify-center">
     <Countdown
       date={endTime}
       onComplete={async () => {
@@ -98,10 +116,23 @@ export default function Pomodoro() {
         }
       }}
       renderer={({ minutes, seconds, completed }) =>
-        completed ? <span>Done!</span> :
-        <span>{String(minutes).padStart(2,"0")}:{String(seconds).padStart(2,"0")}</span>
-      }
+  completed ? (
+    <span className="font-mono text-2xl text-orange-600">Done!</span>
+  ) : (
+    <div className="mx-auto w-fit flex items-baseline justify-center">
+      <span className="font-mono tabular-nums text-5xl text-orange-600 w-[2ch] text-right">
+        {String(minutes).padStart(2, "0")}
+      </span>
+      <span className="font-mono text-5xl text-orange-600 px-2 leading-none">:</span>
+      <span className="font-mono tabular-nums text-5xl text-orange-600 w-[2ch] text-left">
+        {String(seconds).padStart(2, "0")}
+      </span>
+    </div>
+  )
+}
+
     />
+    </div>
 )}
 
     </div>
