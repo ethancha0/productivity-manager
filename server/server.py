@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.secret_key = "hello"
-app.permanent_session_lifetime = timedelta(seconds = 5) #login session duration
+app.permanent_session_lifetime = timedelta(minutes = 5) #login session duration
 
 
 #setup SQLALchemy

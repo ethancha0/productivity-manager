@@ -8,12 +8,20 @@ function CreateAccount(){
     const [confirmPassword, setConfirmPassword] = useState("")
 
 
-    const passwordsMatch = confirm.length > 0 && password === confirmPassword;
+    const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
 
-    function handleSubmit(){
-        //clear input 
+    function handleSubmit(e){
+        //prevent refresh
+        e.preventDefault();
+        
+        if(userName == "" || email == "" || password == "" || confirmPassword == ""){
+            alert("missing text field(s)");
+            return
+        }
 
-
+        console.log("sending to server!")
+        console.log(userName, email, password, )
+    
     }
 
 
@@ -57,11 +65,12 @@ function CreateAccount(){
                     ></input>
 
                     <input
+                    type = "password"
                     className = "w-full rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3"
                     placeholder = "Re-type Password"
                     value = {confirmPassword}
                     onChange = {(e) => setConfirmPassword(e.target.value)}
-                    aria-invald = {confirm.length > 0 && !passwordsMatch}
+                   
                     ></input>
                 </div>
 
@@ -72,9 +81,16 @@ function CreateAccount(){
                {/* Row 3 */}
                 <button 
                 className = "block mx-auto w-full border border-neutral-700 py-3"
-                disabled = {!passwordsMatch || password.length === 0}>  
+                disabled = {!passwordsMatch || password.length === 0} 
+                >  
                     Submit
                 </button>
+
+
+                {/* inline invalid password error */}
+                {confirmPassword.length > 0 && confirmPassword != password && (
+                    <p>passwords don't match BRUH</p>
+                )}
 
             </form>
 
