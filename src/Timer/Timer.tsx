@@ -47,7 +47,7 @@ export default function Pomodoro() {
         <input
           className="bg-transparent font-mono text-5xl size-20 text-orange-500" 
           type="number"
-          step={5}
+          step={1}
           value = {inputTime}
           onChange={(e) => setInputTime(e.target.value)}
         ></input> )
@@ -71,7 +71,8 @@ export default function Pomodoro() {
 
           <form onSubmit ={sendUserFeedback} className={styles.feedback}>
           <textarea 
-            className = "font-mono rounded-xl size-30 h-20 "
+            className = "font-mono rounded-xl size-30 h-20 w-full max-w-md border border-purple-400/30
+            shadow-lg shadow-purple-500/10 p-5"
             type="text-area"
             value={intervalFeedback}
             placeholder="What did you accomplish?"
@@ -79,6 +80,7 @@ export default function Pomodoro() {
           ></textarea>
           
           <input
+          className ="mt-4 w-full"
           type="range"
           min={1}
           max={10}
