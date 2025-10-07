@@ -21,6 +21,28 @@ function CreateAccount(){
 
         console.log("sending to server!")
         console.log(userName, email, password, )
+
+       
+
+        //send data to backend
+        async function sendAccountInfo(){
+            try{
+                const res = await fetch("http://127.0.0.1:5000/submit_accountinfo", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({userName, email, password, confirmPassword}) // convert JS obj to dict
+                });
+
+                const data = await res.json(); // read server response
+                console.log("saved: ", data)
+            }
+            catch(err){
+                console.error("error saving account info", err)
+            }
+        }
+
+        // call function to send data to backend
+        sendAccountInfo()
     
     }
 
