@@ -10,7 +10,7 @@ function CreateAccount(){
 
     const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
 
-    function handleSubmit(e){
+    function handleSubmit(e: React.FormEvent){
         //prevent refresh
         e.preventDefault();
         
@@ -30,7 +30,8 @@ function CreateAccount(){
                 const res = await fetch("http://127.0.0.1:5000/submit_accountinfo", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({userName, email, password, confirmPassword}) // convert JS obj to dict
+                    credentials: "include",
+                    body: JSON.stringify({userName, email, password}), // convert JS obj to dict
                 });
 
                 const data = await res.json(); // read server response
