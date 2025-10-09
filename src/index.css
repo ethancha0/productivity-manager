@@ -71,3 +71,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+/* calendar overrides */
+@layer components {
+  .tm-calendar-wrapper .fc-toolbar-title { @apply text-xl font-bold; }
+  .tm-calendar-wrapper .fc-timegrid-slot { height: 2.25rem; }   /* row height */
+  .tm-calendar-wrapper .fc-event { @apply rounded-xl shadow-lg; }
+  .tm-calendar-wrapper .fc-event-main { @apply px-2 py-1 text-[12px]; }
+}
