@@ -26,22 +26,27 @@ import '@fontsource/roboto/400.css';
 
 */
 
-export default function Dashboard() {
+export default function Calandar() {
 
-  const[showPopup, setShowPopup] = useState(true);
+  const[showPopup, setShowPopup] = useState(false); // shows popup 
   const calRef = useRef<FullCalendar | null>(null)
 
-  // sample events — replace with your API data
-  const events = useMemo(() => [
-    { id: 'a', title: 'Workout', start: '2025-10-09T10:00:00', end: '2025-10-09T11:00:00' },
-    { id: 'b', title: 'Study',   start: '2025-10-10T14:30:00', end: '2025-10-10T16:00:00' },
-  ], [])
+  const[draft, setDraft] = useState(""); // draft for event submit for popup
+
 
   const handleDateClick = (arg: any) => {
     // only fires in all-day slots; for time slots, use select (see below)
-    alert(`date clicked: ${arg.dateStr}`)
+   // alert(`date clicked: ${arg.dateStr}`)
     
     setShowPopup(true)
+    const api = calRef.current.getApi(); // grabs Calendar API obj from ref 
+    if(!api) return
+    
+    api.addEvent({
+      title: "BOOKIE",
+      start: arg.dateStr,
+      allDay: true,
+    })
   }
 
   function recount(view?: any){
@@ -70,7 +75,7 @@ export default function Dashboard() {
 
       <FullCalendar 
   
-        ref={calRef}
+        ref={calRef} // ref is way to hold a pointer to something 
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
         datesSet={() => recount()} // calls after view/date changes
         editable="true"
@@ -106,8 +111,9 @@ export default function Dashboard() {
 
       
 
-        // interaction
+        // interactions
         dateClick={handleDateClick}
+       // dateClick={(arg) => addQuickEvent(arg.dateStr)}
         selectable={true}
         selectMirror={true}
         select={(sel) => {
@@ -123,7 +129,10 @@ export default function Dashboard() {
     
       />
    
-      <Popup/>
+      <Popup
+        open={showPopup}
+        draft={draft}
+      />
 
       <h1></h1>
 
