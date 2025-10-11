@@ -2,11 +2,16 @@
 export default {
   content: [
     './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx,css}', // include .css if you use @layer overrides
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+        // If you want Roboto as your default sans:
+        // sans: ['Roboto', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
-}
-
+};

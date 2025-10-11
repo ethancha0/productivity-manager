@@ -9,8 +9,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: white;
+  background-color: #212121;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -76,7 +76,7 @@ button:focus-visible {
 /* calendar overrides */
 @layer components {
   .tm-calendar-wrapper .fc-toolbar-title { @apply text-xl font-bold; }
-  .tm-calendar-wrapper .fc-timegrid-slot { height: 2.25rem; }   /* row height */
+  .tm-calendar-wrapper .fc-timegrid-slot { height: 9rem; }   /* row height */
   .tm-calendar-wrapper .fc-event { @apply rounded-xl shadow-lg; }
   .tm-calendar-wrapper .fc-event-main { @apply px-2 py-1 text-[12px]; }
 }

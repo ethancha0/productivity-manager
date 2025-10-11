@@ -1,13 +1,14 @@
-from flask import Flask, request, jsonify, session, redirect, url_for, render_template
+from flask import Flask, request, jsonify, session, redirect, url_for, render_template, Response, abort
 from flask_cors import CORS # allows React to talk to Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
+import requests
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173","http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173","http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5000", "http://127.0.0.1:5000"]}}, supports_credentials=True)
 
 app.secret_key = "hello"
 app.permanent_session_lifetime = timedelta(days = 30) #login session duration
@@ -156,6 +157,39 @@ def submit_weeklygoal():
         db.session.rollback()
         return jsonify({"error": "failed to save weekly goal"})
 
+
+# FUNC: lookup the users ICS URL
+#def get_ics_url(userName):
+
+#in memory cashe (dict) 
+#CASHE = {}
+
+# FUNC: link the ics cal link to user and send it back to react
+
+
+### TESTING
+
+# 🔒 Replace this with YOUR secret .ics URL for testing
+ICS_URL = "https://calendar.google.com/calendar/ical/ethantubegames%40gmail.com/private-0d95d039e66e1ebc49701d179fe3e04e/basic.ics"
+
+@app.get("/api/test-ics")
+def test_ics():
+  try:
+    print(f"🔧 DEBUG: Fetching ICS from {ICS_URL}")
+    r = requests.get(ICS_URL, timeout=10)
+    r.raise_for_status()
+    print(f"🔧 DEBUG: Successfully fetched ICS, content length: {len(r.content)}")
+  except requests.RequestException as e:
+    print(f"❌ DEBUG: ICS fetch failed: {e}")
+    # Upstream error: show a simple message
+    abort(502, f"Upstream ICS fetch failed: {e}")
+
+  # Return raw .ics bytes so FullCalendar's iCalendar plugin can parse it
+  response = Response(r.content, mimetype="text/calendar; charset=utf-8")
+  response.headers['Access-Control-Allow-Origin'] = '*'
+  response.headers['Access-Control-Allow-Methods'] = 'GET'
+  response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+  return response
 
 
 if __name__ == "__main__":
