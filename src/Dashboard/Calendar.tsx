@@ -1,5 +1,4 @@
 import {useRef, useState} from "react";
-import Popup from "./EventPopup.tsx"
 
 // Calendar.tsx
 import FullCalendar from '@fullcalendar/react'
@@ -29,10 +28,14 @@ import '@fontsource/roboto/400.css';
 export default function Calandar() {
 
   const[showPopup, setShowPopup] = useState(false); // shows popup 
-  const calRef = useRef<FullCalendar | null>(null)
 
-  const[draft, setDraft] = useState(""); // draft for event submit for popup
+  const calRef = useRef<FullCalendar | null>(null) // ref that points to FullCalendar component instance
+  const[cal, setCal] = useState<CalendarApi | null>(null); // the CalendarAPI returned from ref, (like an obj of calRef)
 
+  const[draftDate, setDraftDate] = useState(""); // draft for event submit for popup
+  const[draftDescription, setDraftDescription] = useState(""); // for popup
+  const[draftTitle, setDraftTitle] = useState("");
+  const[draftTime, setDraftTime] = useState("");
 
   const handleDateClick = (arg: any) => {
     // only fires in all-day slots; for time slots, use select (see below)
@@ -40,13 +43,53 @@ export default function Calandar() {
     
     setShowPopup(true)
     const api = calRef.current.getApi(); // grabs Calendar API obj from ref 
+    setCal(api);
     if(!api) return
     
-    api.addEvent({
-      title: "BOOKIE",
-      start: arg.dateStr,
-      allDay: true,
-    })
+    //ask user for info through popup 
+    setDraftDate(arg.dateStr)
+    
+
+  }
+
+  //FUNCTION: Send new event data to server
+  function handlePopupSubmit(e){
+    e.preventDefault() // prevent page refresh
+    //POST server request 
+    async function sendPopupData(){
+      try{
+        const res = await fetch("http://127.0.0.1:5000/submit_new_event",{
+          method: "POST",
+          headers: {"Content-Type" : "application/json"},
+          credentials: "include",
+          body: JSON.stringify({draftDate, draftDescription, draftTitle, draftTime})
+        });
+
+        const data = await res.json(); // read server response
+        console.log("saved: ", data)
+
+        //hide popup
+        setShowPopup(false);
+
+        //add Event to front end for instant appearance (temp storage)
+        cal.addEvent({
+        title: draftTitle,
+        start: draftDate,
+        allDay: !draftTime,
+        })
+        //clear out drafts 
+        setDraftDate("");
+        setDraftDescription("");
+        setDraftTitle("");
+        setDraftTime("");
+      }
+      catch(err){
+        console.log("error adding new event ", err)
+      }
+    }
+
+    sendPopupData()
+
   }
 
   function recount(view?: any){
@@ -128,15 +171,56 @@ export default function Calandar() {
         events={{url: 'http://127.0.0.1:5000/api/test-ics', format: 'ics'}}
     
       />
-   
-      <Popup
-        open={showPopup}
-        draft={draft}
-      />
-
+  
       <h1></h1>
 
-      {/* Send ics link to backend */}
+      {showPopup &&(
+
+        <form onSubmit={handlePopupSubmit}  className="border border-8  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 
+        shadow-[0_0_0_1px_rgba(255,255,255,.25),0_0_40px_10px_rgba(56,189,248,.18)]
+        rounded-3xl p-8 m-32
+        hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
+        transition">
+
+          <input
+            type="text"
+            placeholder="Title"
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+          ></input>
+
+          <input
+            type="text"
+            placeholder="Description (optional)"
+            value={draftDescription}
+            onChange={(e) => setDraftDescription(e.target.value)}
+          ></input>
+
+            <input
+            className={""}
+            type="text"
+            placeholder="Date"
+            value ={draftDate}
+            onChange={(e) => setDraftDate(e.target.value)}
+           ></input>
+
+
+          <input
+            type="text"
+            placeholder="Time (leave blank if all-day)"
+            value={draftTime}
+            onChange={(e) => setDraftTime(e.target.value)}
+          ></input>
+
+          <button type="submit">
+              Submit
+           </button>
+
+         </form>
+)}
+
+
+
       
       {/* You can trigger it from a button too */}
       <button onClick={() => recount()}>Recount</button>

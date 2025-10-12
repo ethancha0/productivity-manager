@@ -36,6 +36,8 @@ function CreateAccount(){
 
                 const data = await res.json(); // read server response
                 console.log("saved: ", data)
+
+                
             }
             catch(err){
                 console.error("error saving account info", err)

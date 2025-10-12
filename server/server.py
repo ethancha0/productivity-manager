@@ -158,29 +158,19 @@ def submit_weeklygoal():
         return jsonify({"error": "failed to save weekly goal"})
 
 
-# FUNC: lookup the users ICS URL
-#def get_ics_url(userName):
 
-#in memory cashe (dict) 
-#CASHE = {}
-
-# FUNC: link the ics cal link to user and send it back to react
-
-
-### TESTING
-
-# 🔒 Replace this with YOUR secret .ics URL for testing
+# Replace this with YOUR secret .ics URL for testing
 ICS_URL = "https://calendar.google.com/calendar/ical/ethantubegames%40gmail.com/private-0d95d039e66e1ebc49701d179fe3e04e/basic.ics"
 
 @app.get("/api/test-ics")
 def test_ics():
   try:
-    print(f"🔧 DEBUG: Fetching ICS from {ICS_URL}")
+    print(f" DEBUG: Fetching ICS from {ICS_URL}")
     r = requests.get(ICS_URL, timeout=10)
     r.raise_for_status()
-    print(f"🔧 DEBUG: Successfully fetched ICS, content length: {len(r.content)}")
+    print(f" DEBUG: Successfully fetched ICS, content length: {len(r.content)}")
   except requests.RequestException as e:
-    print(f"❌ DEBUG: ICS fetch failed: {e}")
+    print(f" DEBUG: ICS fetch failed: {e}")
     # Upstream error: show a simple message
     abort(502, f"Upstream ICS fetch failed: {e}")
 
@@ -190,6 +180,20 @@ def test_ics():
   response.headers['Access-Control-Allow-Methods'] = 'GET'
   response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
   return response
+
+
+@app.post("/submit_new_event")
+def submit_new_event():
+    data = request.get_json() # parse JSON body 
+    print("recieved: ", data)
+
+    return jsonify({"message": "event successfully submitted"})
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
