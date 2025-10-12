@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useStopwatch } from "react-timer-hook";
 
+import API from import.meta.env.VITE_API_BASE;
+
 export default function Stopwatch() {
   const { seconds, minutes, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
@@ -14,7 +16,7 @@ export default function Stopwatch() {
     setSessions((s) => [...s, { ms: totalMs, at: Date.now() }]);
 
     // optional: send to backend
-    // await fetch("/api/save", {
+    // await fetch(`${API}/save`, {
     //   method: "POST",
     //   headers: { "Content-Type": "application/json" },
     //   body: JSON.stringify({ durationMs: totalMs }),

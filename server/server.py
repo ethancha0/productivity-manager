@@ -8,14 +8,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173","http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5000", "http://127.0.0.1:5000"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://productivity-manager-ml2a8v4ty-ethanchao2005-6638s-projects.vercel.app/","http://localhost:5173","http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5000", "http://127.0.0.1:5000"]}}, supports_credentials=True)
 
-app.secret_key = "hello"
+app.secret_key = os.environ.get("ETHANSKEY")
 app.permanent_session_lifetime = timedelta(days = 30) #login session duration
 
 app.config.update(
-    SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False,   # True when you serve HTTPS
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True,   # True when you serve HTTPS
 )
 
 

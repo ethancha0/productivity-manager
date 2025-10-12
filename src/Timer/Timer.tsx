@@ -4,6 +4,8 @@ import styles from './Timer.module.css'
 import oven from '../assets/oven.gif'
 
 
+const API = import.meta.env.VITE_API_BASE;
+
 export default function Pomodoro() {
 
   const [inputTime, setInputTime] = useState(25);
@@ -106,7 +108,7 @@ export default function Pomodoro() {
       date={endTime}
       onComplete={async () => {
         try {
-          await fetch("http://127.0.0.1:5000/api/log-study", {
+          await fetch(`${API}/api/log-study`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",

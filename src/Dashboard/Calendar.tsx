@@ -10,6 +10,7 @@ import { Calendar } from '@fullcalendar/core'
 import iCalendarPlugin from '@fullcalendar/icalendar'
 import '../index.css'
 
+const API = import.meta.env.VITE_API_BASE;
 
 //fonts
 import '@fontsource/roboto/300.css';
@@ -58,7 +59,7 @@ export default function Calandar() {
     //POST server request 
     async function sendPopupData(){
       try{
-        const res = await fetch("http://127.0.0.1:5000/submit_new_event",{
+        const res = await fetch(`${API}/submit_new_event`,{
           method: "POST",
           headers: {"Content-Type" : "application/json"},
           credentials: "include",

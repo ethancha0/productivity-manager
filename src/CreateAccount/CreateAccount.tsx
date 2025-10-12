@@ -1,4 +1,5 @@
 import {useState} from 'react'
+const API = import.meta.env.VITE_API_BASE;
 
 function CreateAccount(){
 
@@ -27,7 +28,7 @@ function CreateAccount(){
         //send data to backend
         async function sendAccountInfo(){
             try{
-                const res = await fetch("http://127.0.0.1:5000/submit_accountinfo", {
+                const res = await fetch(`${API}/submit_accountinfo`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     credentials: "include",
