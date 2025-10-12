@@ -173,7 +173,7 @@ export default function Calandar() {
       />
   
       <h1></h1>
-
+      
       {showPopup &&(
 
         <form onSubmit={handlePopupSubmit}  className="border border-8  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 
@@ -182,6 +182,7 @@ export default function Calandar() {
         hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
         transition">
 
+          <button onClick = {() => (showPopup = false)} className={"flex"}>X</button>
           <input
             type="text"
             placeholder="Title"

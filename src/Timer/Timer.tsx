@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import Countdown from "react-countdown";
 import styles from './Timer.module.css'
 import oven from '../assets/oven.gif'
-import stopwatch from '../Stopwatch/Stopwatch'
 
 
 export default function Pomodoro() {
@@ -59,8 +58,9 @@ export default function Pomodoro() {
   
             <img 
               className ="h-48 w-auto"
-              src = {oven}>
-            </img>
+              src = {oven}
+              alt="Oven"
+            />
 
             {!inSession ? <p>Begin Baking</p> : <p>Cooking!!</p>}
         </button>
@@ -68,16 +68,15 @@ export default function Pomodoro() {
       
 
       {getFeedback && (
-
-          <form onSubmit ={sendUserFeedback} className={styles.feedback}>
-          <textarea 
+        <>
+        <form onSubmit ={sendUserFeedback} className={styles.feedback}>
+        <textarea 
             className = "font-mono rounded-xl size-30 h-20 w-full max-w-md border border-purple-400/30
             shadow-lg shadow-purple-500/10 p-5"
-            type="text-area"
             value={intervalFeedback}
             placeholder="What did you accomplish?"
             onChange = {(e) => setIntervalFeedback(e.target.value)}
-          ></textarea>
+          />
           
           <input
           className ="mt-4 w-full"
@@ -97,6 +96,7 @@ export default function Pomodoro() {
           >End Interval</button>
 
         </form>
+        </>
       )}
       
 
@@ -109,6 +109,7 @@ export default function Pomodoro() {
           await fetch("http://127.0.0.1:5000/api/log-study", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ duration: inputTime }),
           });
         } catch (e) {
