@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useStopwatch } from "react-timer-hook";
 
-import API from import.meta.env.VITE_API_BASE;
+const API = import.meta.env.VITE_API_BASE;
 
 export default function Stopwatch() {
   const { seconds, minutes, isRunning, start, pause, reset } =

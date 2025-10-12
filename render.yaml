@@ -3,8 +3,8 @@ services:
     name: tabmate-backend
     env: python
     plan: free
-    buildCommand: "cd server && pip install -r requirements.txt"
-    startCommand: "cd server && gunicorn --bind 0.0.0.0:$PORT server:app"
+    buildCommand: "pip install -r server/requirements.txt"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT server.server:app"
     envVars:
       - key: ETHANSKEY
         generateValue: true

@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
 
-const API = import.meta.env.VITE_API_BASE;
+
 
 // Calendar.tsx
 import FullCalendar from '@fullcalendar/react'
