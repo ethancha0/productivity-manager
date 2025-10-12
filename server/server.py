@@ -1,65 +1,60 @@
-from flask import Flask, request, jsonify, session, redirect, url_for, render_template, Response, abort
-from flask_cors import CORS # allows React to talk to Flask
+from flask import Flask, request, jsonify, session, Response, abort
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
-import requests
-import os
-
+import os, requests
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-#CORS(app)
-# Dynamic CORS origins based on environment
+app.url_map.strict_slashes = False
+
+# CORS origins (local + prod) 
 allowed_origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173", 
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5000",
-    "http://127.0.0.1:5000"
+    "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:3000", "http://127.0.0.1:3000",
 ]
-
-# Add production origins from environment variables
+# add prod from env (optional)
 if os.environ.get("FRONTEND_URL"):
-    allowed_origins.append(os.environ.get("FRONTEND_URL"))
+    allowed_origins.append(os.environ["FRONTEND_URL"])
 if os.environ.get("VERCEL_URL"):
-    allowed_origins.append(f"https://{os.environ.get('VERCEL_URL')}")
+    allowed_origins.append(f"https://{os.environ['VERCEL_URL']}")
+# hard-code Vercel URL too (safer)
+allowed_origins.append("https://productivity-manager-nine.vercel.app")
 
-CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
-
-app.secret_key = os.environ.get("ETHANSKEY")
-app.permanent_session_lifetime = timedelta(days = 30) #login session duration
-
-app.config.update(
-    SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,   # True when you serve HTTPS
+CORS(
+    app,
+    resources={r"/*": {"origins": allowed_origins}},
+    supports_credentials=True,
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
+app.secret_key = os.environ.get("ETHANSKEY", "dev-secret")
+app.permanent_session_lifetime = timedelta(days=30)
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True,    # must be True in prod HTTPS
+)
 
-#setup SQLALchemy
-# Use PostgreSQL for production, SQLite for development
-if os.environ.get("DATABASE_URL"):
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# ----- DB config (single place, BEFORE db = SQLAlchemy(app)) -----
+db_url = os.environ.get("DATABASE_URL")
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url or "sqlite:///users.sqlite3"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 
+# Models
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True, index=True)
     email = db.Column(db.String(100), unique=True, index=True, nullable=False)
     password = db.Column(db.String(255))
-    time= db.Column(db.Integer, default = 0, nullable = False)
-    weeklyGoal = db.Column(db.Integer, default = 0, nullable = False)
+    time = db.Column(db.Integer, default=0, nullable=False)
+    weeklyGoal = db.Column(db.Integer, default=0, nullable=False)
 
-    def __init__(self, name, email, password, time):
-        self.name = name
-        self.email = email
-        self.password = password
-        self.time = time
-
-
+# Routes 
 @app.route("/")
 def home():
     return "hi"
@@ -69,156 +64,84 @@ def stats():
     sessionName = session.get("name")
     if not sessionName:
         return jsonify({"error": "not logged in - stats"}), 401
-    
-    #find user in DB 
     user = Users.query.filter_by(name=sessionName).first()
     if not user:
         return jsonify({"error": "unable to find user in DB"}), 404
-    
-    return jsonify({
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "weeklyGoal": user.weeklyGoal,
-    })
+    return jsonify({"id": user.id, "name": user.name, "email": user.email, "weeklyGoal": user.weeklyGoal})
 
-
-@app.route("/submit_accountinfo", methods=["POST", "OPTIONS"]) #app.post, not app.route
+@app.route("/submit_accountinfo", methods=["POST", "OPTIONS"])
 def submit_accountinfo():
     if request.method == "OPTIONS":
-        # OK preflight
         return ("", 204)
-
     try:
-        data = request.get_json(force=True) # parse JSON 
-        print("received account data", data)
-
-        # Check if user already exists
-        existing_user = Users.query.filter_by(email=data["email"]).first()
-        if existing_user:
-            print(f"User with email {data['email']} already exists")
+        data = request.get_json(force=True)
+        if Users.query.filter_by(email=data["email"]).first():
             return jsonify({"error": "User with this email already exists"}), 400
-
-        #save to DB
-        pw_hash = generate_password_hash(data["password"]) #hash password
+        pw_hash = generate_password_hash(data["password"])
         user = Users(name=data["userName"], email=data["email"], password=pw_hash, time=0)
-
-
-        #try creating a session 
-      #  session.permanent = True
-       # session["user"] = {"id": 123, "email": data["email"], "name": "Ethan"}
-
         db.session.add(user)
         db.session.commit()
-        print("User saved successfully")
+
+        # If  want signup => logged in:
+         session.permanent = True
+         session["name"] = user.name
 
         return jsonify({"message": "saved account data"}), 200
     except Exception as e:
-        print(f"Error saving account: {e}")
         db.session.rollback()
         return jsonify({"error": "Failed to save account data"}), 500
-
 
 @app.post("/login")
 def login():
     data = request.get_json(silent=True) or {}
     username = (data.get("userName") or "").strip()
     pw = data.get("password") or ""
-
-    user = Users.query.filter_by(name=username).first() #check if user in DB 
-    if not user or not check_password_hash(user.password, pw): #check if password matches user
+    user = Users.query.filter_by(name=username).first()
+    if not user or not check_password_hash(user.password, pw):
         return jsonify({"error": "invalid credentials"}), 401
-
     session.permanent = True
-    session["name"] = user.name   # <-- key used by /welcome
+    session["name"] = user.name
     return jsonify({"message": "logged in"}), 200
-
-    
-
-
-
-
 
 @app.route("/submit_weeklygoal", methods=["POST", "OPTIONS"])
 def submit_weeklygoal():
     if request.method == "OPTIONS":
-        return "", 200
+        return ("", 204)
     try:
         if "name" not in session:
-            print("DEBUG: No user in session!")
             return jsonify({"error": "not logged in"}), 401
-
-        data = request.get_json(force=True) # parse JSON
-
-        weeklyGoal = (data.get("weeklyGoal") or "").strip()
-
-       # user = Users.query.filter_by(name=username).first()
-       # if not user:
-        #    return jsonify({"error": "unable to find user"}), 404
-
-        #get user name from session 
-        sessionName = session.get("name")
-        if not sessionName:
-            return jsonify({"error": "cannot find user in session"}), 404
-        #query DB for user
-        user = Users.query.filter_by(name=sessionName).first()
+        data = request.get_json(force=True)
+        weeklyGoal = int(data.get("weeklyGoal", 0))   # <-- fixed cast
+        user = Users.query.filter_by(name=session["name"]).first()
         if not user:
             return jsonify({"error": "error finding user in database"}), 404
-        
-        #found user, update goal
         user.weeklyGoal = weeklyGoal
-
         db.session.commit()
-        print("weekly goal saved: ", data["weeklyGoal"])
         return jsonify({"message": "weekly goal saved"}), 200
-        
-    
     except Exception as e:
-        print(f"error saving weekly goal: {e}")
         db.session.rollback()
-        return jsonify({"error": "failed to save weekly goal"})
+        return jsonify({"error": "failed to save weekly goal"}), 500
 
 
-
-# Replace this with YOUR secret .ics URL for testing
+# ----- ICS passthrough (CORS-safe) -----
 ICS_URL = "https://calendar.google.com/calendar/ical/ethantubegames%40gmail.com/private-0d95d039e66e1ebc49701d179fe3e04e/basic.ics"
 
 @app.get("/api/test-ics")
 def test_ics():
-  try:
-    print(f" DEBUG: Fetching ICS from {ICS_URL}")
-    r = requests.get(ICS_URL, timeout=10)
-    r.raise_for_status()
-    print(f" DEBUG: Successfully fetched ICS, content length: {len(r.content)}")
-  except requests.RequestException as e:
-    print(f" DEBUG: ICS fetch failed: {e}")
-    # Upstream error: show a simple message
-    abort(502, f"Upstream ICS fetch failed: {e}")
-
-  # Return raw .ics bytes so FullCalendar's iCalendar plugin can parse it
-  response = Response(r.content, mimetype="text/calendar; charset=utf-8")
-  response.headers['Access-Control-Allow-Origin'] = '*'
-  response.headers['Access-Control-Allow-Methods'] = 'GET'
-  response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-  return response
-
-
-@app.post("/submit_new_event")
-def submit_new_event():
-    data = request.get_json() # parse JSON body 
-    print("recieved: ", data)
-
-    return jsonify({"message": "event successfully submitted"})
-
-
-
-
-
-
-
+    try:
+        r = requests.get(ICS_URL, timeout=10)
+        r.raise_for_status()
+    except requests.RequestException as e:
+        abort(502, f"Upstream ICS fetch failed: {e}")
+    resp = Response(r.content, mimetype="text/calendar; charset=utf-8")
+    origin = request.headers.get("Origin")
+    if origin in allowed_origins:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
+        resp.headers["Vary"] = "Origin"
+    return resp
 
 if __name__ == "__main__":
-
     with app.app_context():
         db.create_all()
     app.run(host="127.0.0.1", port=5000, debug=True)

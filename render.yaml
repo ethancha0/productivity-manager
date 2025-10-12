@@ -13,7 +13,7 @@ services:
           name: tabmate-db
           property: connectionString
       - key: FRONTEND_URL
-        value: https://your-frontend-url.vercel.app
+        value: https://productivity-manager-nine.vercel.app
 
 databases:
   - name: tabmate-db
