@@ -1,5 +1,7 @@
 import {useRef, useState} from "react";
 
+const API = import.meta.env.VITE_API_BASE;
+
 // Calendar.tsx
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -169,7 +171,7 @@ export default function Calandar() {
       
        
         //events = {events}
-        events={{url: 'http://127.0.0.1:5000/api/test-ics', format: 'ics'}}
+        events={{url: `${API}/api/test-ics`, format: 'ics'}}
     
       />
   

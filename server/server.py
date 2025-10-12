@@ -3,12 +3,29 @@ from flask_cors import CORS # allows React to talk to Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 import requests
+import os
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, resources={r"/*": {"origins": ["https://productivity-manager-ml2a8v4ty-ethanchao2005-6638s-projects.vercel.app/","http://localhost:5173","http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5000", "http://127.0.0.1:5000"]}}, supports_credentials=True)
+# Dynamic CORS origins based on environment
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173", 
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000"
+]
+
+# Add production origins from environment variables
+if os.environ.get("FRONTEND_URL"):
+    allowed_origins.append(os.environ.get("FRONTEND_URL"))
+if os.environ.get("VERCEL_URL"):
+    allowed_origins.append(f"https://{os.environ.get('VERCEL_URL')}")
+
+CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
 
 app.secret_key = os.environ.get("ETHANSKEY")
 app.permanent_session_lifetime = timedelta(days = 30) #login session duration
@@ -20,7 +37,11 @@ app.config.update(
 
 
 #setup SQLALchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
+# Use PostgreSQL for production, SQLite for development
+if os.environ.get("DATABASE_URL"):
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

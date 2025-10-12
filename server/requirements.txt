@@ -5,3 +5,4 @@ SQLAlchemy
 gunicorn
 requests
 python-dateutil
+psycopg2-binary

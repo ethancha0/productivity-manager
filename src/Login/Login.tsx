@@ -62,7 +62,7 @@ function Login(){
 
     
     // 2) Verify session with user stats
-    const w = await fetch("http://127.0.0.1:5000/stats", {
+    const w = await fetch(`${API}/stats`, {
       method: "GET",
       credentials: "include",
     });
