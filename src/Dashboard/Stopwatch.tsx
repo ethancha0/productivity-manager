@@ -26,7 +26,12 @@ export default function Stopwatch() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 pt-0">
+
+    <div className="flex flex-col items-center gap-2 pt-0 p-4 justify-center items-center m-6  font-semibold border border-2  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 shadow-[0_0_0_1px_rgba(255,255,255,.25),0_0_40px_10px_rgba(56,189,248,.18)]
+    rounded-3xl
+    hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
+    transition">
+      <h2 className="">Stopwatch</h2>
       <div className="font-mono text-5xl text-orange-600 tabular-nums">
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
       </div>

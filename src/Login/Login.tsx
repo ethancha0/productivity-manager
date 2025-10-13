@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {API} from "../api"
 import {useNavigate} from "react-router-dom"
 import Spinner from '../Animations/Spinner'
+import Blur from '../Animations/BlurText'
 
 
 function Login(){
@@ -66,7 +67,13 @@ function Login(){
       rounded-3xl p-8 m-32
       hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
       transition">
-              <h1>Login</h1>
+               <Blur
+                text="Login"
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-6xl p-16"
+                />
           <form onSubmit = {handleSubmit} >
               <p>Username</p>
               <input
@@ -76,7 +83,7 @@ function Login(){
               onChange = {(e) => setUserName(e.target.value)}
               ></input>
 
-              <p>password</p>
+              <p>Password</p>
               <input
               className="w-full rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"
               type="password"

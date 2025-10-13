@@ -73,7 +73,7 @@ export default function Pomodoro() {
         <form onSubmit ={sendUserFeedback} className={styles.feedback}>
         <textarea 
             className = {`font-mono rounded-xl size-30 h-20 w-full max-w-md border border-purple-400/30
-            shadow-lg shadow-purple-500/10 p-5`}
+            shadow-lg shadow-purple-500/10 p-11`}
             value={intervalFeedback}
             placeholder="What did you accomplish?"
             onChange = {(e) => setIntervalFeedback(e.target.value)}

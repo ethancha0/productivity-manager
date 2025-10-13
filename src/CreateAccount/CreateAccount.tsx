@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import { useNavigate, Link } from "react-router-dom";
+import BlurText from "../Animations/BlurText";
 
 import Spinner from "../Animations/Spinner"
 
@@ -71,9 +72,13 @@ function CreateAccount(){
     rounded-3xl
     hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
     transition">
-            <h1 className="p-16">
-                Create Account
-            </h1>
+            <BlurText
+                text="Create Account"
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-6xl p-16"
+                />
             <p>
                 Already have an account? <Link to="/login" >Sign in</Link>
             </p>
