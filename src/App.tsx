@@ -36,8 +36,8 @@ function App() {
         {/* Protected pages */}
         <Route path = "/dashboard" element = {<Dashboard/>} />
 
-        {/* Catch all */}
-        <Route path = "*" element = {<h1>404</h1>} />
+        {/* Catch all - route to signup for now  */}
+        <Route path = "/*" element= {<CreateAccount/>} />
 
       </Routes>
 
