@@ -1,6 +1,8 @@
 import {useState} from 'react';
 import { useNavigate, Link } from "react-router-dom";
 
+import Spinner from "../Animations/Spinner"
+
 //const API = import.meta.env.VITE_API_BASE;
 import {API} from "../api"
 
@@ -127,6 +129,8 @@ function CreateAccount(){
                 >  
                     Submit
                 </button>
+
+                {loading && <Spinner/>}
 
 
                 {/* inline invalid password error */}

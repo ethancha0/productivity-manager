@@ -3,6 +3,7 @@ import {useState} from 'react'
 //const API = import.meta.env.VITE_API_BASE;
 import {API} from "../api"
 import {useNavigate} from "react-router-dom"
+import Spinner from '../Animations/Spinner'
 
 
 function Login(){
@@ -10,46 +11,18 @@ function Login(){
 
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
 
-    /*
-    function handleSubmit(e: React.FormEvent){
-        //prevent refresh
-        e.preventDefault();
-
-        console.log("loggin to server!")
-
-        //send data to backend
-        async function sendLogin(){
-            try{
-                const res = await fetch("http://127.0.0.1:5000/login", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    credentials: "include", // required for session cookie
-                    body: JSON.stringify({userName, password}), // convert JS obj to dict
-                    
-                });
-                const r = fetch("http://127.0.0.1:5000/welcome", { credentials: "include" });
-                console.log(r)
-
-                const data = await res.json(); // read server response
-                console.log("saved: ", data)
-            }
-            catch(err){
-                console.error("error logging", err)
-            }
-        }
-
-        // call function to send data to backend
-        sendLogin()
-    
-    }
-    */
 
     async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
 
   try {
+
+    // show loading spinner 
+    setLoading(true);
+
     // 1) Login (sets session cookie)
     const res = await fetch(`${API}/login`, {
       method: "POST",
@@ -82,7 +55,7 @@ function Login(){
     console.error("error logging in:", err);
     alert("invalid credentials")
   }
-  
+  setLoading(false);
 }
 
 
@@ -116,6 +89,7 @@ function Login(){
               type="submit"
               >Submit
           </button>
+          {loading && <Spinner/>}
 
           </form>
 
