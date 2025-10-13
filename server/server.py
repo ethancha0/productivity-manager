@@ -83,8 +83,8 @@ def submit_accountinfo():
         db.session.commit()
 
         # If  want signup => logged in:
-         session.permanent = True
-         session["name"] = user.name
+        session.permanent = True
+        session["name"] = user.name
 
         return jsonify({"message": "saved account data"}), 200
     except Exception as e:
