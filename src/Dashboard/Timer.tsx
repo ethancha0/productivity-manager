@@ -40,7 +40,7 @@ export default function Pomodoro() {
     <div>
       
 
-      <form onSubmit ={handleSubmit} className="flex flex-col-reverse items-center gap-2">
+      <form onSubmit ={handleSubmit} className="flex flex-col-reverse items-center gap-2 pt-8 m-2 pb-0">
 
         {/* input time */}
         {!inSession && (

@@ -26,7 +26,7 @@ export default function Stopwatch() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-2 pt-0">
       <div className="font-mono text-5xl text-orange-600 tabular-nums">
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
       </div>

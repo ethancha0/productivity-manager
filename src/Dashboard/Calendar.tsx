@@ -105,7 +105,7 @@ export default function Calandar() {
 
   return (
     <div className="border border-8  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 shadow-[0_0_0_1px_rgba(255,255,255,.25),0_0_40px_10px_rgba(56,189,248,.18)]
-    rounded-3xl p-8 m-32
+    rounded-3xl p-4 m-8
     hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
     transition
     fc
@@ -187,6 +187,7 @@ export default function Calandar() {
 
           <button onClick = {() => (setShowPopup(false))} className={"flex"}>X</button>
           <input
+            className="w-full rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"
             type="text"
             placeholder="Title"
             value={draftTitle}
@@ -194,6 +195,7 @@ export default function Calandar() {
           ></input>
 
           <input
+            className="rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"
             type="text"
             placeholder="Description (optional)"
             value={draftDescription}
@@ -201,7 +203,7 @@ export default function Calandar() {
           ></input>
 
             <input
-            className={""}
+            className={"rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"}
             type="text"
             placeholder="Date"
             value ={draftDate}
@@ -210,6 +212,7 @@ export default function Calandar() {
 
 
           <input
+            className={"rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"}
             type="text"
             placeholder="Time (leave blank if all-day)"
             value={draftTime}
@@ -227,7 +230,7 @@ export default function Calandar() {
 
       
       {/* You can trigger it from a button too */}
-      <button onClick={() => recount()}>Recount</button>
+      {/* <button onClick={() => recount()}>Recount</button>*/}
 
     </div>
   )
