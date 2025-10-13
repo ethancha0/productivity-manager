@@ -185,7 +185,7 @@ export default function Calandar() {
         hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
         transition">
 
-          <button onClick = {() => (showPopup = false)} className={"flex"}>X</button>
+          <button onClick = {() => (setShowPopup(false))} className={"flex"}>X</button>
           <input
             type="text"
             placeholder="Title"

@@ -1,31 +1,50 @@
-import Timer from './Timer/Timer'
-import Tabs from './Tabs/Tabs'
-import Stopwatch from './Stopwatch/Stopwatch'
+import {BrowserRouter, Routes, Route, Navigate, Link} from "react-router-dom";
+
 import WeeklyGoals from './WeeklyGoals/WeeklyGoals'
-import Calendar from './Dashboard/Calendar'
 import Dashboard from './Dashboard/Dashboard'
 
 import CreateAccount from './CreateAccount/CreateAccount'
 import Login from './Login/Login'
 
+
+
 function App() {
 
   return (
     <>
+    {/* for testing */}
+    {/*
+    <BrowserRouter>
+      <nav className="p-2 gap-4 flex">
+        <Link to="/signup"> <CreateAccount/> </Link>
+        <Link to="/login"> <Login/></Link>
+        <Link to="/dashboard"> <Dashboard/> </Link>
+      </nav>
 
-      
+    */}
+    
+    <BrowserRouter>
+    
+      <Routes>
+        {/* Default landing */}
 
-      <Timer/>
-      {/*  <Tabs/> */}
-      <Stopwatch/>
 
-      <CreateAccount/>
+        {/* Public pages */}
+        <Route path = "/signup" element= {<CreateAccount/>} />
+        <Route path = "/login" element = {<Login/>} />
 
-      <Login/>
+        {/* Protected pages */}
+        <Route path = "/dashboard" element = {<Dashboard/>} />
 
-      <WeeklyGoals/>
+        {/* Catch all */}
+        <Route path = "*" element = {<h1>404</h1>} />
 
-      <Dashboard/>
+      </Routes>
+
+    </BrowserRouter>
+
+     
+
       
     </>
   )

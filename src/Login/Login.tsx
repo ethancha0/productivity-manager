@@ -1,12 +1,16 @@
 import {useState} from 'react'
 
-const API = import.meta.env.VITE_API_BASE;
+//const API = import.meta.env.VITE_API_BASE;
+import {API} from "../api"
+import {useNavigate} from "react-router-dom"
 
 
 function Login(){
+    const nav = useNavigate();
 
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+
 
     /*
     function handleSubmit(e: React.FormEvent){
@@ -70,9 +74,13 @@ function Login(){
     console.log("userStats says:", userStats);
     
     
-    // (optional) set app state based on welcomeText, e.g. setLoggedIn(true)
-  } catch (err) {
+    // nav to dashboard
+    nav("/dashboard", {replace: true});
+  }
+  
+  catch (err) {
     console.error("error logging in:", err);
+    alert("invalid credentials")
   }
   
 }
@@ -80,11 +88,15 @@ function Login(){
 
 
     return(
-        <div>
+        <div className="flex flex-col items-center m-6  font-semibold border border-8  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 shadow-[0_0_0_1px_rgba(255,255,255,.25),0_0_40px_10px_rgba(56,189,248,.18)]
+    rounded-3xl p-8 m-32
+    hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
+    transition">
             <h1>Login</h1>
         <form onSubmit = {handleSubmit} >
             <p>Username</p>
             <input
+            className="w-full rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"
             type="text"
             value = {userName}
             onChange = {(e) => setUserName(e.target.value)}
@@ -92,6 +104,7 @@ function Login(){
 
             <p>password</p>
             <input
+            className="w-full rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"
             type="password"
             value = {password}
             onChange = {(e) => setPassword(e.target.value)}

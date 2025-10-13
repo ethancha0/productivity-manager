@@ -1,12 +1,18 @@
-import {useState} from 'react'
-const API = import.meta.env.VITE_API_BASE;
+import {useState} from 'react';
+import { useNavigate, Link } from "react-router-dom";
+
+//const API = import.meta.env.VITE_API_BASE;
+import {API} from "../api"
 
 function CreateAccount(){
+
+    const nav = useNavigate();
 
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("")
+    const [loading, setLoading] = useState(false)
 
 
     const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
@@ -14,10 +20,11 @@ function CreateAccount(){
     function handleSubmit(e: React.FormEvent){
         //prevent refresh
         e.preventDefault();
+        setLoading(true);
         
         if(userName == "" || email == "" || password == "" || confirmPassword == ""){
             alert("missing text field(s)");
-            return
+            return;
         }
 
         console.log("sending to server!")
@@ -38,10 +45,15 @@ function CreateAccount(){
                 const data = await res.json(); // read server response
                 console.log("saved: ", data)
 
-                
+                // go to /login 
+                nav("/login", {replace : true});
             }
             catch(err){
                 console.error("error saving account info", err)
+                alert(String(err))
+            }
+            finally{
+                setLoading(false);
             }
         }
 
@@ -52,12 +64,15 @@ function CreateAccount(){
 
 
     return(
-        <div className="flex flex-col items-center outline-orange-500 outline m-6 font-mono font-semibold">
+        <div className="flex flex-col items-center m-6  font-semibold border border-8  border-[#8e8db5]  bg-[#283848] backdrop-blur ring-1 ring-white/25 shadow-[0_0_0_1px_rgba(255,255,255,.25),0_0_40px_10px_rgba(56,189,248,.18)]
+    rounded-3xl p-8 m-32
+    hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
+    transition">
             <h1 className="p-16">
                 Create Account
             </h1>
             <p>
-                Already have an account? <a href ="">Sign in</a>
+                Already have an account? <Link to="/login" >Sign in</Link>
             </p>
 
             <form onSubmit={handleSubmit} className = "mt-10 w-full max-w-3xl space-y-6 p-6">

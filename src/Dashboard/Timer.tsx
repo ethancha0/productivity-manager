@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import Countdown from "react-countdown";
-import styles from './Timer.module.css'
 import oven from '../assets/oven.gif'
 
 
