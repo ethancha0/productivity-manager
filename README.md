@@ -1,8 +1,8 @@
 # Read Me
 
 Hi! Thanks for checking out my project. I'm currently building this productivity manager because I want to use a singular app for managing 
-and keeping track of my academic progress. Through this app, I reinforced many concepts, like sending GET/POST request to a Flask server. I also 
-learned many other skills like styling with Tailwind, implementing a Calendar component, and reading documentation on components. 
+and keeping track of my academic progress. Through this app, I reinforced many concepts, like sending GET/POST requests to a Flask server and state management. I also 
+learned many other skills, like styling with Tailwind, implementing a Calendar component, and deploying a backend server using Render 
 
 
 This project is far from done, as I am learning as I implement new features, but here are some of the features I'm currently working on!
