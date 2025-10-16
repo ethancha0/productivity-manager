@@ -12,7 +12,7 @@ import { Calendar } from '@fullcalendar/core'
 import iCalendarPlugin from '@fullcalendar/icalendar'
 import '../index.css'
 
-const API = import.meta.env.VITE_API_BASE;
+import {API} from '../api'
 
 //fonts
 import '@fontsource/roboto/300.css';
@@ -38,7 +38,9 @@ export default function Calandar() {
   const[draftDate, setDraftDate] = useState(""); // draft for event submit for popup
   const[draftDescription, setDraftDescription] = useState(""); // for popup
   const[draftTitle, setDraftTitle] = useState("");
-  const[draftTime, setDraftTime] = useState("");
+  const[draftStartTime, setDraftStartTime] = useState(null);
+  const[draftEndTime, setDraftEndTime] = useState(null);
+  const[draftAllDay, setDraftAllDay] = useState(true);
 
   const handleDateClick = (arg: any) => {
     // only fires in all-day slots; for time slots, use select (see below)
@@ -58,6 +60,24 @@ export default function Calandar() {
   //FUNCTION: Send new event data to server
   function handlePopupSubmit(e){
     e.preventDefault() // prevent page refresh
+
+
+    
+    const pad2 = (s) => s.padStart(2, "0");
+
+    // format start/end time
+    const startISO = draftStartTime
+      ? `${draftDate}T${pad2(draftStartTime)}:00` 
+      : draftDate // start at date if not given time
+    
+
+     const endISO = draftEndTime
+      ? `${draftDate}T${pad2(draftEndTime)}:00` 
+      : null
+      
+
+    console.log("Sending",draftTitle, draftDescription, draftAllDay, startISO, endISO)
+
     //POST server request 
     async function sendPopupData(){
       try{
@@ -65,7 +85,7 @@ export default function Calandar() {
           method: "POST",
           headers: {"Content-Type" : "application/json"},
           credentials: "include",
-          body: JSON.stringify({draftDate, draftDescription, draftTitle, draftTime})
+          body: JSON.stringify({draftTitle, draftDescription, draftAllDay, startISO, endISO})
         });
 
         const data = await res.json(); // read server response
@@ -74,17 +94,17 @@ export default function Calandar() {
         //hide popup
         setShowPopup(false);
 
-        //add Event to front end for instant appearance (temp storage)
-        cal.addEvent({
-        title: draftTitle,
-        start: draftDate,
-        allDay: !draftTime,
-        })
+        //refresh calendar to show new event
+        if (cal) {
+          cal.refetchEvents();
+        }
+
         //clear out drafts 
         setDraftDate("");
         setDraftDescription("");
         setDraftTitle("");
-        setDraftTime("");
+        setDraftStartTime("");
+        setDraftEndTime("");
       }
       catch(err){
         console.log("error adding new event ", err)
@@ -124,7 +144,7 @@ export default function Calandar() {
         ref={calRef} // ref is way to hold a pointer to something 
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
         datesSet={() => recount()} // calls after view/date changes
-        editable="true"
+        editable={true}
         initialView="dayGridMonth"               //  the view you want
         headerToolbar={{                          // toggle views & nav
           left: 'prev,next today',
@@ -168,10 +188,33 @@ export default function Calandar() {
           // e.g., open a modal to create an event
         }}
 
-      
-       
-        //events = {events}
-        events={{url: `${API}/api/test-ics`, format: 'ics'}}
+
+        eventSources={[
+        {
+          events: async (info, successCallback, failureCallback) => {
+            try {
+              
+              const res = await fetch(
+                `${API}/api/events?start=${encodeURIComponent(info.startStr)}&end=${encodeURIComponent(info.endStr)}`,
+                { method: "GET", credentials: "include" } // send session cookie
+              );
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data = await res.json(); // should be an array of { id, title, start, end, allDay }
+              successCallback(data);
+            } catch (err) {
+              console.error("events fetch failed", err);
+              failureCallback(err);
+            }
+          },
+        },
+        {
+          url: `${API}/api/test-ics`,
+          format: "ics",
+          // extraFetchOptions: { credentials: "include" }, // only if your ICS endpoint requires cookies
+        },
+      ]}
+
+
     
       />
   
@@ -214,10 +257,19 @@ export default function Calandar() {
           <input
             className={"rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"}
             type="text"
-            placeholder="Time (leave blank if all-day)"
-            value={draftTime}
-            onChange={(e) => setDraftTime(e.target.value)}
+            placeholder="Start Time (blank if all-day)"
+            value={draftStartTime}
+            onChange={(e) => setDraftStartTime(e.target.value)}
           ></input>
+
+         <input
+            className={"rounded-full border border-neutral-700 bg-neutral-800/60 px-5 py-3 shadow-inner placeholder-neutral-400 focus:outline-none focus:ring-2"}
+            type="text"
+            placeholder="End Time (blank if all-day)"
+            value={draftEndTime}
+            onChange={(e) => setDraftEndTime(e.target.value)}
+          ></input>
+
 
           <button type="submit">
               Submit
@@ -226,9 +278,6 @@ export default function Calandar() {
          </form>
 )}
 
-
-
-      
       {/* You can trigger it from a button too */}
       {/* <button onClick={() => recount()}>Recount</button>*/}
 

@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import Countdown from "react-countdown";
 import oven from '../assets/oven.gif'
 
+import {API} from '../api'
 
-const API = import.meta.env.VITE_API_BASE;
 
 export default function Pomodoro() {
 
