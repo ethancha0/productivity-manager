@@ -77,6 +77,7 @@ class Event(db.Model):
    # color = db.Column(db.String(16), default="")
 
     owner = db.relationship("Users", back_populates="events")
+
     
 
 # Routes 

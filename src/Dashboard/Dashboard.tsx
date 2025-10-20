@@ -2,7 +2,9 @@ import Calendar from "./Calendar"
 import HabitTracker from "./HabitTracker"
 import Timer from "./Timer"
 import Stopwatch from "./Stopwatch"
+import ProgressCircle from "../Dashboard/CircularProgressBar"
 import exStats from "../assets/ex-statbreakdown.png"
+
 
 function Dashboard(){
 
@@ -27,6 +29,12 @@ function Dashboard(){
         rounded-3xl h-52 p-2
         hover:ring-2 hover:ring-sky-300/35 hover:shadow-[0_0_30px_8px_rgba(56,189,248,.18)]
         transition"/> 
+
+
+                    <ProgressCircle
+                        goal={100}
+                        total={30}
+                    />
                 </div>
                 <Stopwatch/>
             </div>
