@@ -48,6 +48,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # Models
+
+# MODEL: Stores user account info
 class Users(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -64,6 +66,14 @@ class Users(db.Model):
         cascade="all, delete-orphan"
     )
 
+    #relationship to focus-data
+    focusdata = db.relationship(
+        "FocusData",
+        back_populates="owner", 
+        cascade="all, delete-orphan"
+    )
+
+# MODEL: Stores user-created event data 
 class Event(db.Model):
     __tablename__ = "events"
     id = db.Column(db.Integer, primary_key=True)
@@ -77,6 +87,22 @@ class Event(db.Model):
    # color = db.Column(db.String(16), default="")
 
     owner = db.relationship("Users", back_populates="events")
+
+# MODEL: Stores pomodoro time data 
+class FocusData(db.Model):
+    __tablename__ = "focusdata"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True, nullable=False)
+
+    date = db.Column(db.String(100), nullable=False)
+    day_focus = db.Column(db.Integer, default=0)
+    week_focus = db.Column(db.Integer, default=0)
+    monthly_focus = db.Column(db.Integer, default=0)
+    yearly_focus = db.Column(db.Integer, default = 0)
+
+    owner = db.relationship("Users", back_populates="focusdata")
+
+
 
     
 
