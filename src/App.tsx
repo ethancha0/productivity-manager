@@ -5,6 +5,8 @@ import Dashboard from './Dashboard/Dashboard'
 
 import CreateAccount from './CreateAccount/CreateAccount'
 import Login from './Login/Login'
+import Welcome from './Welcome/Welcome'
+
 
 
 
@@ -32,6 +34,7 @@ function App() {
         {/* Public pages */}
         <Route path = "/signup" element= {<CreateAccount/>} />
         <Route path = "/login" element = {<Login/>} />
+        <Route path = "/weeklygoals" element = {<WeeklyGoals/>} />
 
         {/* Protected pages */}
         <Route path = "/dashboard" element = {<Dashboard/>} />

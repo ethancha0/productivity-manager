@@ -8,36 +8,47 @@ import "react-circular-progressbar/dist/styles.css";
 // Animation
 import { easeQuadInOut } from "d3-ease";
 import AnimatedProgressProvider from "../Animations/AnimatedProgressProvider";
-function CircularProgressBar(){
+function CircularProgressBar({total, goal, title}){
+
+let percent = (total / goal) * 100;
 
     return(
-        <div>
+        <div className="flex items-center gap-2" >
         
-            <AnimatedProgressProvider
-                valueStart={0}
-                valueEnd={66}
-                duration={1.4}
-                easingFunction={easeQuadInOut}
-                //repeat
-        
-            >
-                {value => {
-                // Keep smooth value for animation, but round for display
-                const displayValue = Math.round(value);
-                return (
-                    <CircularProgressbar
-                    value={value}
-                    text={`${displayValue}%`}
-                    /* This is important to include, because if you're fully managing the
-                animation yourself, you'll want to disable the CSS animation. */
-                    styles={buildStyles({ 
-                        pathTransition: "none"
-                    })}
-                    />
-                );
-                }}
-            </AnimatedProgressProvider>
-     
+            <div className = "flex items-center gap-3">
+                <AnimatedProgressProvider
+                
+                    valueStart={0}
+                    valueEnd={percent}
+                    duration={1.4}
+                    easingFunction={easeQuadInOut}
+                    //repeat
+
+            
+                >
+                    {value => {
+                    // Keep smooth value for animation, but round for display
+                    const displayValue = Math.round(value);
+                    return (
+                        <>
+                        <CircularProgressbar
+                        value={value}
+                        text={`${displayValue}%`}
+                        /* This is important to include, because if you're fully managing the
+                    animation yourself, you'll want to disable the CSS animation. */
+                        styles={buildStyles({ 
+                            pathTransition: "none"
+                        })}
+
+                        />
+                        <p className="font-semibold">{title}</p>
+                        </>
+                    );
+                    }}
+
+
+                </AnimatedProgressProvider>
+            </div>
 
         </div>
 

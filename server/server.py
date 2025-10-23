@@ -161,19 +161,63 @@ def submit_weeklygoal():
     if request.method == "OPTIONS":
         return ("", 204)
     try:
+        #checks if user in session
         if "name" not in session:
             return jsonify({"error": "not logged in"}), 401
+        #retrieve data
         data = request.get_json(force=True)
-        weeklyGoal = int(data.get("weeklyGoal", 0))   # <-- fixed cast
-        user = Users.query.filter_by(name=session["name"]).first()
+        weeklyGoal = int(data.get("weeklyGoal", 0)) 
+
+        #match user to User db
+        user_name = session["name"]
+        user = Users.query.filter_by(name=user_name).first()
         if not user:
             return jsonify({"error": "error finding user in database"}), 404
+        
+        #match user to pomodoro db
+        row = (FocusData.query.filter_by(user_id=user.id)
+            .order_by(FocusData.date.desc()).first()) # orders dates in desc. order (returns today)
+
+        row.day_focus = weeklyGoal
         user.weeklyGoal = weeklyGoal
+
         db.session.commit()
         return jsonify({"message": "weekly goal saved"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "failed to save weekly goal"}), 500
+
+# ROUTE: Returns the user's study goal 
+@app.get("/get_studydata")
+def get_studydata():
+        
+    # check if user in session 
+    user_name = session.get("name")
+    if not user_name:
+        return jsonify({"error": "not logged in"}), 401
+        
+    #find user in database
+    user = Users.query.filter_by(name=user_name).first()
+    if not user:
+        return jsonify({"error": "could not find user in db"})
+        
+    try:
+
+        #match user to pomodoro database
+        row = (FocusData.query.filter_by(user_id=user.id)
+               .order_by(FocusData.date.desc()).first()) # orders the date and grabs the most recent (today)
+
+
+        #send data
+        return jsonify([{
+            "day" : row.day_focus
+        }])
+    
+    except Exception as e:
+        print(f"Error fetching study data: {e}")
+        return jsonify([]), 200
+
+
 
 @app.route("/submit_new_event", methods=["POST", "OPTIONS"])
 def submit_new_event():
